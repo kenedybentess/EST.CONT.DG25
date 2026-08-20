@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Elgin - Material Livre</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*{font-family:Inter,sans-serif}
+.wms-row-scroll{scrollbar-width:thin;scrollbar-color:#0090FF22 transparent}
+.wms-row-scroll::-webkit-scrollbar{height:6px}
+.wms-row-scroll::-webkit-scrollbar-thumb{background:#0090FF33;border-radius:999px}
+.wms-row-scroll::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body class="bg-[#0e0e10] text-zinc-100 min-h-screen">
+<header class="sticky top-0 z-50 border-b border-[#2a2a30] bg-[#121214]/90 backdrop-blur">
+<div class="mx-auto max-w-[1280px] px-4 sm:px-6 h-[64px] flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="bg-white rounded-xl px-3 py-1.5 flex items-center shadow">
+<img src="images.png" alt="elgin" class="h-[28px] object-contain" onerror="this.outerHTML='<span style=color:#0090FF;font-weight:900;letter-spacing:0.14em;font-size:18px>elgin</span>'"/>
+</div>
+<div class="hidden sm:block">
+<div class="text-[12px] font-black tracking-[0.18em]">MATERIAL LIVRE</div>
+<div class="text-[10px] tracking-[0.14em] text-zinc-500">Sincronizado com index.html • padrão 12-001-1</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div id="sync-status" class="text-[10px] px-2.5 py-1 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-300">● CONECTANDO</div>
+<a href="index.html" class="h-8 px-3 rounded-lg bg-[#1a1a1e] border border-[#2a2a30] text-white text-[11px] font-bold flex items-center">← Index</a>
+<button id="btn-sync" class="h-8 px-3 rounded-lg bg-[#0090FF] hover:bg-[#0080e0] text-white text-[11px] font-bold">Sincronizar Firebase</button>
+</div>
+</div>
+</header>
+
+<main class="mx-auto max-w-[1280px] px-4 sm:px-6 py-5">
+<section class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<div class="rounded-[14px] border border-[#2a2a30] bg-[#151518] p-4"><div class="text-[10px] tracking-[0.16em] text-zinc-500">POSIÇÕES LIVRES</div><div id="kpi-livres" class="text-[22px] font-black mt-1">0</div><div id="kpi-total" class="text-[11px] text-zinc-500 mt-1">de 0 totais • Firebase only</div></div>
+<div class="rounded-[14px] border border-[#2a2a30] bg-[#151518] p-4"><div class="text-[10px] tracking-[0.16em] text-zinc-500">% LIVRE</div><div id="kpi-pct" class="text-[22px] font-black mt-1">0%</div><div class="text-[11px] text-emerald-400 mt-1">disponível Firebase</div></div>
+<div class="rounded-[14px] border border-[#2a2a30] bg-[#151518] p-4"><div class="text-[10px] tracking-[0.16em] text-zinc-500">RUAS COM LIVRE</div><div id="kpi-ruas" class="text-[22px] font-black mt-1">0</div><div class="text-[11px] text-zinc-500 mt-1">mesma pasta index</div></div>
+<div class="rounded-[14px] border border-[#0090FF]/30 bg-[#0e1a28] p-4"><div class="text-[10px] tracking-[0.16em] text-[#0090FF]">SYNC FIREBASE</div><div class="text-[12px] font-bold mt-1 text-white">wms_v2/posicoes</div><div class="text-[10px] text-zinc-400 mt-1">dg25-e1833 • sem localStorage</div></div>
+</section>
+
+<section class="rounded-[16px] border border-[#2a2a30] bg-[#151518] p-4 mb-6 flex flex-col sm:flex-row gap-3">
+<input id="filtro-rua" placeholder="Filtrar rua ex: 12" class="h-10 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px] w-full sm:w-[180px] outline-none focus:border-[#0090FF]/50"/>
+<select id="filtro-nivel" class="h-10 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px] w-full sm:w-[140px]"><option value="">Todos níveis</option><option value="7">Nível 7</option><option value="6">Nível 6</option><option value="5">Nível 5</option><option value="4">Nível 4</option><option value="3">Nível 3</option><option value="2">Nível 2</option><option value="1">Nível 1</option></select>
+<div class="flex-1 text-[11px] text-zinc-500 flex items-center px-2">Só LIVRES • mesma pasta do index.html • linha única horizontal scroll • padrão 12-001-1</div>
+</section>
+
+<div id="ruas-container"></div>
+
+<!-- MODAL ALOCAR -->
+<div id="modal-alloc" class="fixed inset-0 z-[70] hidden">
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-[440px] rounded-[20px] border border-[#2a2a30] bg-[#18181b] p-6 shadow-2xl">
+<h3 class="text-[14px] font-black tracking-[0.12em]">ALOCAR MATERIAL LIVRE</h3>
+<p id="modal-pos-id" class="text-[12px] text-[#0090FF] font-mono mt-1"></p>
+<div class="mt-4 grid gap-3">
+<input id="in-sku" placeholder="SKU ex: ELG-1234" class="h-11 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px] outline-none focus:border-[#0090FF]/50"/>
+<input id="in-desc" placeholder="Descrição material" class="h-11 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px] outline-none"/>
+<div class="grid grid-cols-2 gap-3">
+<input id="in-qtd" type="number" placeholder="Qtd" class="h-11 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px]"/>
+<input id="in-lote" placeholder="Lote" class="h-11 px-3 rounded-xl bg-[#0e0e10] border border-[#2a2a30] text-[13px]"/>
+</div>
+</div>
+<div class="mt-5 flex gap-2">
+<button onclick="closeModal()" class="flex-1 h-11 rounded-xl border border-[#2a2a30] text-[12px] font-bold">Cancelar</button>
+<button onclick="confirmAlocar()" class="flex-1 h-11 rounded-xl bg-[#0090FF] hover:bg-[#0080e0] text-white text-[12px] font-black tracking-wide">ALOCAR AGORA</button>
+</div>
+<div class="mt-3 text-[10px] text-zinc-500 font-mono text-center">Grava direto Firebase wms_v2/posicoes • sync index.html • sem localStorage</div>
+</div>
+</div>
+
+<div id="toast-wrap" class="fixed bottom-4 right-4 z-[80] flex flex-col gap-2 pointer-events-none"></div>
+</main>
+
+<footer class="border-t border-[#2a2a30] py-4 text-center text-[10px] tracking-[0.14em] text-zinc-600">Elgin - Material Livre • material-livre.html na mesma pasta do index.html • Padrão 12-001-1 • Firebase dg25-e1833 • wms_v2/posicoes • sem localStorage</footer>
+
+<script>
+// FIREBASE - MESMA CONFIG DO INDEX, SEM LOCALSTORAGE
+const firebaseConfig = { databaseURL: "https://dg25-e1833-default-rtdb.firebaseio.com", projectId: "dg25-e1833" };
+try { firebase.initializeApp(firebaseConfig); } catch(e){ try{ firebase.app(); }catch{} }
+
+let posicoes = {};
+let selectedPos = null;
+
+function toast(msg){
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'pointer-events-auto px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-[#121214] border-[#2a2a30] text-white shadow-xl';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>el.remove(), 2800);
+}
+
+function salvarNoFirebase(novoObj){
+  posicoes = novoObj;
+  // APENAS FIREBASE, SEM localStorage
+  firebase.database().ref('wms_v2/posicoes').set(novoObj).then(()=>{
+    toast('Sincronizado com index.html via Firebase');
+    document.getElementById('sync-status').textContent = '● SYNC OK';
+    document.getElementById('sync-status').className = 'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-300';
+  }).catch(e=>{ toast('Erro Firebase: '+e.message); });
+  render();
+}
+
+function carregarDoFirebase(){
+  document.getElementById('sync-status').textContent = '● CONECTANDO';
+  firebase.database().ref('wms_v2/posicoes').on('value', snap=>{
+    const val = snap.val();
+    if(val && typeof val==='object'){
+      posicoes = val;
+      document.getElementById('sync-status').textContent = '● SYNC OK';
+      document.getElementById('sync-status').className = 'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-300';
+      render();
+    } else {
+      posicoes = {};
+      document.getElementById('sync-status').textContent = '● VAZIO';
+      render();
+    }
+  }, err=>{
+    document.getElementById('sync-status').textContent = '● ERRO';
+    document.getElementById('sync-status').className = 'text-[10px] px-2.5 py-1 rounded-full border border-red-500/20 bg-red-500/10 text-red-300';
+  });
+}
+
+function getLivres(){
+  return Object.values(posicoes).filter(p=> !p.sku || p.status==='livre' || p.status==='free' || !p.ocupada || p.ocupada===false);
+}
+
+function render(){
+  const filtroRua = document.getElementById('filtro-rua').value.trim();
+  const filtroNivel = document.getElementById('filtro-nivel').value.trim();
+  const livres = getLivres();
+  const total = Object.keys(posicoes).length;
+  document.getElementById('kpi-livres').textContent = livres.length;
+  document.getElementById('kpi-total').textContent = `de ${total} totais • Firebase only`;
+  document.getElementById('kpi-pct').textContent = total ? Math.round(livres.length/total*100)+'%' : '0%';
+  const ruasCom = new Set(livres.map(p=>p.rua));
+  document.getElementById('kpi-ruas').textContent = ruasCom.size;
+
+  const porRua = {};
+  livres.forEach(p=>{
+    if(filtroRua && String(p.rua)!==filtroRua) return;
+    if(filtroNivel && String(p.nivel)!==filtroNivel) return;
+    if(!porRua[p.rua]) porRua[p.rua]=[];
+    porRua[p.rua].push(p);
+  });
+
+  const container = document.getElementById('ruas-container');
+  container.innerHTML='';
+  const ruasOrdenadas = Object.keys(porRua).sort((a,b)=>Number(a)-Number(b));
+  if(ruasOrdenadas.length===0){
+    container.innerHTML = `<div class="rounded-[16px] border border-[#2a2a30] bg-[#151518] p-8 text-center"><div class="text-[13px] text-zinc-400">Nenhuma posição livre encontrada.</div><div class="text-[11px] text-zinc-600 mt-2">Verifique Firebase wms_v2/posicoes • está na mesma pasta do index.html • padrão 12-001-1</div></div>`;
+    return;
+  }
+
+  ruasOrdenadas.forEach(rua=>{
+    const todasDaRua = porRua[rua].sort((a,b)=> Number(a.nivel)-Number(b.nivel) || Number(a.pos)-Number(b.pos));
+    const porNivel = {};
+    todasDaRua.forEach(p=>{ if(!porNivel[p.nivel]) porNivel[p.nivel]=[]; porNivel[p.nivel].push(p); });
+
+    const cardRua = document.createElement('div');
+    cardRua.className = 'rounded-[16px] border border-[#2a2a30] bg-[#151518] p-4 mb-5 border-l-4 border-l-[#0090FF]';
+    cardRua.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="h-8 px-3 rounded-full bg-[#0090FF]/15 border border-[#0090FF]/30 text-[#0090FF] text-[12px] font-black tracking-[0.14em] flex items-center">RUA ${rua}</div>
+          <div class="text-[11px] text-zinc-400">${todasDaRua.length} livres • ${rua}-001-1</div>
+        </div>
+        <div class="text-[10px] text-zinc-500">${Object.keys(porNivel).length} níveis</div>
+      </div>
+      <div class="space-y-3" id="niveis-${rua}"></div>
+    `;
+    container.appendChild(cardRua);
+    const niveisWrap = cardRua.querySelector(`#niveis-${rua}`);
+
+    Object.keys(porNivel).sort((a,b)=>Number(b)-Number(a)).forEach(nivel=>{
+      const lista = porNivel[nivel].sort((a,b)=> Number(a.pos)-Number(b.pos));
+      const nivelDiv = document.createElement('div');
+      nivelDiv.className = 'rounded-[12px] bg-[#0e0e10] border border-[#2a2a30]/60 p-3';
+      nivelDiv.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-[11px] font-bold tracking-[0.12em] text-zinc-300">NÍVEL ${nivel} • ${lista.length} livres</div>
+          <div class="text-[10px] text-zinc-500 font-mono">${rua}-001-${nivel}</div>
+        </div>
+        <div class="wms-row-scroll flex flex-nowrap gap-2 overflow-x-auto pb-1.5 pt-0.5 px-0.5"></div>
+      `;
+      const row = nivelDiv.querySelector('.wms-row-scroll');
+      lista.forEach(pos=>{
+        const el = document.createElement('div');
+        el.className = 'min-w-[118px] max-w-[118px] flex-shrink-0 snap-start rounded-[12px] border border-emerald-500/20 bg-[#121a14] p-2.5 cursor-pointer hover:border-emerald-500/40 hover:bg-[#152018] transition group';
+        const isNovo = Number(pos.pos)>=11;
+        el.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="text-[11px] font-mono font-bold text-zinc-200">${pos.fullId||pos.id}</div>
+            ${isNovo?'<span class="text-[8px] px-1.5 py-0.5 rounded-full bg-[#7c3aed]/20 border border-[#7c3aed]/30 text-[#a78bfa] font-black">NOVO</span>':''}
+          </div>
+          <div class="mt-1 flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-400"></span><span class="text-[10px] font-bold tracking-wide text-emerald-300">LIVRE</span></div>
+          <button class="mt-2 w-full h-7 rounded-lg bg-[#0090FF] hover:bg-[#0080e0] text-white text-[10px] font-black tracking-wide">ALOCAR</button>
+        `;
+        el.onclick = ()=>openModal(pos);
+        row.appendChild(el);
+      });
+      niveisWrap.appendChild(nivelDiv);
+    });
+  });
+}
+
+function openModal(pos){
+  selectedPos = pos;
+  document.getElementById('modal-pos-id').textContent = pos.fullId || pos.id;
+  document.getElementById('in-sku').value = '';
+  document.getElementById('in-desc').value = '';
+  document.getElementById('in-qtd').value = '';
+  document.getElementById('in-lote').value = '';
+  document.getElementById('modal-alloc').classList.remove('hidden');
+}
+function closeModal(){
+  document.getElementById('modal-alloc').classList.add('hidden');
+  selectedPos = null;
+}
+function confirmAlocar(){
+  if(!selectedPos) return;
+  const sku = document.getElementById('in-sku').value.trim();
+  if(!sku){ toast('Informe SKU'); return; }
+  const desc = document.getElementById('in-desc').value.trim();
+  const qtd = document.getElementById('in-qtd').value.trim();
+  const lote = document.getElementById('in-lote').value.trim();
+  const novo = {...posicoes};
+  const id = selectedPos.id;
+  novo[id] = {...novo[id], sku, descricao:desc, qtd, lote, ocupada:true, status:'ocupado', dataAlocacao:new Date().toISOString()};
+  salvarNoFirebase(novo);
+  toast(`Alocado ${sku} em ${selectedPos.fullId||id} • sincronizado com index.html via Firebase`);
+  closeModal();
+}
+
+document.getElementById('filtro-rua').addEventListener('input', render);
+document.getElementById('filtro-nivel').addEventListener('change', render);
+document.getElementById('btn-sync').addEventListener('click', ()=>{ carregarDoFirebase(); toast('Sincronizando Firebase wms_v2/posicoes...'); });
+
+carregarDoFirebase();
+</script>
+</body>
+</html>
