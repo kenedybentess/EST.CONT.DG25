@@ -269,145 +269,274 @@ Error generating stack: `+u.message+`
   window.addEventListener('load',init);
 })();
 </script>
-<!-- MANUAL POS -->
+
+<!-- V3 FIREBASE DG25 - SEM LOCALSTORAGE - ATUALIZACAO SIMULTANEA -->
 <div id="manual-pos-root" style="display:none; position:fixed; inset:0; z-index:1000000; background:rgba(0,0,0,0.85); overflow:auto; padding:20px;">
-  <div style="max-width:520px;margin:40px auto;background:#151518;border:1px solid #a78bfa;border-radius:20px;padding:20px;">
+  <div style="max-width:560px;margin:30px auto;background:#151518;border:1px solid #10b981;border-radius:20px;padding:20px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h2 style="color:white;font-weight:bold;font-size:16px;">Adicionar Posicoes Manualmente</h2>
+      <h2 style="color:white;font-weight:bold;font-size:15px;">🔥 Firebase DG25 - Add Posicoes Direto no Banco</h2>
       <button id="mp-close" style="width:32px;height:32px;border-radius:50%;background:#232326;color:white;border:none;">X</button>
     </div>
+    <div style="background:#0e0e10;border:1px solid #10b981;border-radius:12px;padding:12px;margin-bottom:12px;">
+      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span style="width:8px;height:8px;background:#10b981;border-radius:50%;display:inline-block;animation: pulse 1s infinite;"></span><span style="color:#10b981;font-size:10px;font-weight:bold;">Conectado: dg25-e1833-default-rtdb.firebaseio.com - SEM localStorage</span></div>
+      <div style="color:#71717a;font-size:9px;">Banco: <span style="color:white;">wms_final/posicoes</span> e <span style="color:white;">wms_final/ruas</span> - atualizacao simultanea via REST</div>
+    </div>
     <div style="background:#0e0e10;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #2a2a30;">
-      <div style="color:#a78bfa;font-size:11px;font-weight:bold;margin-bottom:10px;">EXEMPLO: D11 - D12 do nivel 07 da rua 12</div>
+      <div style="color:#a78bfa;font-size:11px;font-weight:bold;margin-bottom:10px;">ADICIONAR: D11 - D12 do nivel 07 da rua 12</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div><label style="font-size:10px;color:#71717a;font-weight:bold;">RUA *</label><input id="mp-rua" type="number" value="12" style="width:100%;height:44px;background:#0e0e10;border:1px solid #7c3aed;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /></div>
-        <div><label style="font-size:10px;color:#71717a;font-weight:bold;">NIVEL *</label><input id="mp-nivel" type="number" value="7" style="width:100%;height:44px;background:#0e0e10;border:1px solid #7c3aed;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /></div>
+        <div><label style="font-size:10px;color:#71717a;font-weight:bold;">RUA * (1-50)</label><input id="mp-rua" type="number" value="12" min="1" style="width:100%;height:44px;background:#0e0e10;border:1px solid #7c3aed;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /></div>
+        <div><label style="font-size:10px;color:#71717a;font-weight:bold;">NIVEL * (1-99)</label><input id="mp-nivel" type="number" value="7" min="1" style="width:100%;height:44px;background:#0e0e10;border:1px solid #7c3aed;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /></div>
       </div>
-      <div style="margin-top:12px;"><label style="font-size:10px;color:#fbbf24;font-weight:bold;">DIVISOES / POSICOES *</label><input id="mp-divs" value="11,12" placeholder="Ex: 11,12 ou 11-15 ou D11 D12" style="width:100%;height:44px;background:#0e0e10;border:1px solid #fbbf24;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /><div style="font-size:9px;color:#a1a1aa;margin-top:4px;">Aceita: 11,12 | 11-15 | D11 D12 | D11-D12</div></div>
-      <div style="margin-top:12px;display:flex;gap:8px;"><button id="mp-preview" style="flex:1;height:38px;border-radius:10px;background:#232326;color:white;font-size:12px;font-weight:bold;border:none;">Visualizar</button><button id="mp-add" style="flex:2;height:38px;border-radius:10px;background:#a78bfa;color:black;font-size:12px;font-weight:bold;border:none;">ADICIONAR POSICOES</button></div>
+      <div style="margin-top:12px;"><label style="font-size:10px;color:#fbbf24;font-weight:bold;">DIVISOES *</label><input id="mp-divs" value="11,12" style="width:100%;height:44px;background:#0e0e10;border:1px solid #fbbf24;color:white;border-radius:10px;padding:0 12px;margin-top:4px;" /></div>
+      <div style="margin-top:12px;display:flex;gap:8px;"><button id="mp-preview" style="flex:1;height:38px;border-radius:10px;background:#232326;color:white;font-size:12px;font-weight:bold;border:none;">Visualizar</button><button id="mp-add" style="flex:2;height:48px;border-radius:10px;background:#10b981;color:black;font-size:13px;font-weight:bold;border:none;">🔥 GRAVAR DIRETO NO FIREBASE DG25</button></div>
       <div id="mp-preview-area" style="margin-top:12px;display:none;"></div>
       <div id="mp-msg" style="margin-top:12px;display:none;padding:10px;border-radius:10px;font-size:12px;"></div>
+      <div id="mp-log" style="margin-top:8px;font-size:9px;color:#10b981;white-space:pre-wrap;max-height:120px;overflow:auto;background:#0a0a0c;padding:8px;border-radius:8px;border:1px solid #1a1a1e;"></div>
     </div>
-    <div style="background:#0e0e10;border-radius:12px;padding:14px;border:1px solid #2a2a30;"><div style="color:white;font-size:11px;font-weight:bold;margin-bottom:8px;">Posicoes existentes nesta rua/nivel:</div><div id="mp-existentes" style="max-height:150px;overflow:auto;font-size:11px;color:#a1a1aa;"></div></div>
-    <div style="margin-top:14px;display:flex;gap:8px;"><button id="mp-exemplo" style="flex:1;height:40px;border-radius:9999px;background:#fbbf24;color:black;font-size:11px;font-weight:bold;border:none;">Usar exemplo D11-D12 N07 R12</button></div>
+    <div style="background:#0e0e10;border-radius:12px;padding:14px;border:1px solid #2a2a30;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="color:white;font-size:11px;font-weight:bold;">Posicoes no Firebase (tempo real):</span><button id="mp-refresh" style="height:24px;padding:0 10px;border-radius:9999px;background:#3b82f6;color:white;font-size:9px;border:none;">🔄 Recarregar do Banco</button></div><div id="mp-existentes" style="max-height:160px;overflow:auto;font-size:11px;color:#a1a1aa;">Carregando do Firebase...</div></div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button id="mp-exemplo" style="height:40px;border-radius:9999px;background:#fbbf24;color:black;font-size:11px;font-weight:bold;border:none;">⚡ D11-D12 N07 R12</button><button id="mp-migrar" style="height:40px;border-radius:9999px;background:#7c3aed;color:white;font-size:11px;font-weight:bold;border:none;">📥 Migrar do banco antigo</button></div>
   </div>
 </div>
-<script>
-(function(){
-  const KP="wms_final_posicoes", KR="wms_final_ruas";
-  const FB="https://controle-de-estoque-98bf1-default-rtdb.firebaseio.com/wms_final";
-  function getP(){try{return JSON.parse(localStorage.getItem(KP)||"[]")}catch{return []}}
-  function getR(){try{return JSON.parse(localStorage.getItem(KR)||"[]")}catch{return []}}
-  function setP(p){localStorage.setItem(KP, JSON.stringify(p)); try{fetch(FB+'/posicoes.json',{method:'PUT',body:JSON.stringify(p),headers:{'Content-Type':'application/json'}}).catch(()=>{})}catch{}; window.dispatchEvent(new Event('storage')); window.dispatchEvent(new CustomEvent('wms_posicoes_updated',{detail:p})); localStorage.setItem('wms_force_reload', String(Date.now())); }
-  function setR(r){localStorage.setItem(KR, JSON.stringify(r)); try{fetch(FB+'/ruas.json',{method:'PUT',body:JSON.stringify(r),headers:{'Content-Type':'application/json'}}).catch(()=>{})}catch{}}
-  function parseDivs(input){
-    if(!input) return [];
-    let s = String(input).toUpperCase().replace(/[^0-9,\-\s]/g,' ').trim();
-    s = s.replace(/\s+/g, ',').replace(/,,+/g, ',');
-    const out = new Set();
-    const parts = s.split(',').filter(Boolean);
-    for(let p of parts){
-      if(p.includes('-')){
-        const [a,b] = p.split('-').map(x=>parseInt(x.trim(),10)).filter(n=>!isNaN(n));
-        if(!isNaN(a) && !isNaN(b)){
-          const start = Math.min(a,b), end = Math.max(a,b);
-          for(let i=start;i<=end;i++) out.add(i);
-        }
-      } else {
-        const n = parseInt(p.trim(),10);
-        if(!isNaN(n)) out.add(n);
+<style>@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}</style>
+<script type="module">
+// Firebase SDK v9 modular - DG25
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAlUvjjq1zhjjRxCMCPglMPdtJ3Af7ENbM",
+  authDomain: "dg25-e1833.firebaseapp.com",
+  databaseURL: "https://dg25-e1833-default-rtdb.firebaseio.com",
+  projectId: "dg25-e1833",
+  storageBucket: "dg25-e1833.firebasestorage.app",
+  messagingSenderId: "1022871913128",
+  appId: "1:1022871913128:web:717adf4a8529855d41789d",
+  measurementId: "G-L98P1P724T"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// SEM localStorage - tudo direto no Firebase
+const PATH_POS = "wms_final/posicoes";
+const PATH_RUAS = "wms_final/ruas";
+const OLD_FB = "https://controle-de-estoque-98bf1-default-rtdb.firebaseio.com/wms_final";
+
+function log(t){
+  const el=document.getElementById('mp-log');
+  const time=new Date().toLocaleTimeString();
+  if(el) el.textContent = `[${time}] ${t}\n` + el.textContent;
+  console.log('[DG25]', t);
+}
+
+async function getPosFirebase(){
+  try{
+    log('Lendo posicoes do Firebase DG25...');
+    const snap = await get(ref(db, PATH_POS));
+    if(!snap.exists()){ log('Nenhuma posicao no banco ainda'); return []; }
+    const data = snap.val();
+    const arr = Array.isArray(data) ? data : Object.values(data);
+    log(`OK - ${arr.length} posicoes lidas do Firebase`);
+    return arr;
+  }catch(e){ log('ERRO getPos: '+e.message); return []; }
+}
+
+async function getRuasFirebase(){
+  try{
+    const snap = await get(ref(db, PATH_RUAS));
+    if(!snap.exists()) return [];
+    const data = snap.val();
+    return Array.isArray(data) ? data : Object.values(data);
+  }catch(e){ log('ERRO getRuas: '+e.message); return []; }
+}
+
+async function setPosFirebase(pos){
+  try{
+    log(`Gravando ${pos.length} posicoes DIRETO no Firebase DG25...`);
+    await set(ref(db, PATH_POS), pos);
+    log('✅ Gravado com sucesso no Firebase! Atualizacao simultanea ativa');
+    return true;
+  }catch(e){ log('❌ ERRO ao gravar: '+e.message); throw e; }
+}
+
+async function setRuasFirebase(ruas){
+  try{
+    await set(ref(db, PATH_RUAS), ruas);
+    log('Ruas gravadas');
+  }catch(e){ log('Erro ruas: '+e.message); }
+}
+
+function parseDivs(input){
+  if(!input) return [];
+  let s = String(input).toUpperCase().replace(/[^0-9,\-\s]/g,' ').trim();
+  s = s.replace(/\s+/g, ',').replace(/,,+/g, ',');
+  const out = new Set();
+  const parts = s.split(',').filter(Boolean);
+  for(let p of parts){
+    if(p.includes('-')){
+      const [a,b] = p.split('-').map(x=>parseInt(x.trim(),10)).filter(n=>!isNaN(n));
+      if(!isNaN(a) && !isNaN(b)){
+        const start = Math.min(a,b), end = Math.max(a,b);
+        for(let i=start;i<=end;i++) out.add(i);
       }
+    } else {
+      const n = parseInt(p.trim(),10);
+      if(!isNaN(n)) out.add(n);
     }
-    return Array.from(out).sort((a,b)=>a-b);
   }
-  function ensureRua(ruaNum){
-    const ruas = getR();
-    const idx = ruaNum - 1;
-    while(ruas.length <= idx){
-      const i = ruas.length;
-      ruas.push({nome: `Rua ${String(i+1).padStart(2,'0')}`, id: i, numero: i+1});
-    }
-    setR(ruas);
-    return ruas;
+  return Array.from(out).sort((a,b)=>a-b);
+}
+
+async function ensureRua(ruaNum){
+  let ruas = await getRuasFirebase();
+  const idx = ruaNum - 1;
+  while(ruas.length <= idx){
+    const i = ruas.length;
+    ruas.push({nome: `Rua ${String(i+1).padStart(2,'0')}`, id: i, numero: i+1});
   }
-  function listarExistentes(){
-    const ruaNum = parseInt(document.getElementById('mp-rua').value,10) || 12;
-    const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
-    const pos = getP();
-    const idx = ruaNum -1;
-    const filtradas = pos.filter(p=>p.ruaIndex===idx && (isNaN(nivelNum) || p.nivel===nivelNum));
-    const el = document.getElementById('mp-existentes');
-    if(!filtradas.length){ el.innerHTML = `<span style="color:#52525b;">Nenhuma posicao em Rua ${ruaNum} Nivel ${String(nivelNum).padStart(2,'0')}</span>`; return; }
-    el.innerHTML = filtradas.sort((a,b)=>a.div-b.div).map(p=>`<span style="display:inline-block;background:#232326;border:1px solid #2a2a30;border-radius:6px;padding:3px 7px;margin:2px;font-size:10px;color:#a78bfa;">D${String(p.div).padStart(2,'0')} - ${p.posId} - ${p.itens?.length||0} itens</span>`).join('');
-  }
-  function preview(){
-    const ruaNum = parseInt(document.getElementById('mp-rua').value,10);
-    const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
-    const divsInput = document.getElementById('mp-divs').value;
-    if(!ruaNum || isNaN(nivelNum)){ alert('Preencha rua e nivel'); return; }
-    const divs = parseDivs(divsInput);
-    if(!divs.length){ alert('Informe divisoes validas. Ex: 11,12'); return; }
-    const area = document.getElementById('mp-preview-area');
-    area.style.display='block';
-    area.innerHTML = `<div style="background:rgba(167,139,250,0.1);border:1px solid #a78bfa;border-radius:10px;padding:10px;"><div style="color:#a78bfa;font-weight:bold;font-size:11px;margin-bottom:8px;">Previa (${divs.length} posicoes):</div><div style="display:flex;flex-wrap:wrap;gap:4px;">${divs.map(d=>`<span style="background:#7c3aed;color:white;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:bold;">R${String(ruaNum).padStart(2,'0')} N${String(nivelNum).padStart(2,'0')} D${String(d).padStart(2,'0')}</span>`).join('')}</div></div>`;
-    listarExistentes();
-  }
-  function adicionar(){
-    const ruaNum = parseInt(document.getElementById('mp-rua').value,10);
-    const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
-    const divsInput = document.getElementById('mp-divs').value;
-    if(!ruaNum || isNaN(nivelNum)){ alert('Preencha rua e nivel'); return; }
-    const divs = parseDivs(divsInput);
-    if(!divs.length){ alert('Divisoes invalidas'); return; }
-    ensureRua(ruaNum);
-    let pos = getP();
+  await setRuasFirebase(ruas);
+  return ruas;
+}
+
+async function listarExistentes(){
+  const ruaNum = parseInt(document.getElementById('mp-rua').value,10) || 12;
+  const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
+  const el = document.getElementById('mp-existentes');
+  el.textContent = 'Lendo do Firebase DG25...';
+  const pos = await getPosFirebase();
+  const idx = ruaNum -1;
+  const filtradas = pos.filter(p=>p.ruaIndex===idx && (isNaN(nivelNum) || p.nivel===nivelNum));
+  if(!filtradas.length){ el.innerHTML = `<span style="color:#52525b;">Nenhuma posicao em Rua ${ruaNum} Nivel ${nivelNum} - sera criada no Firebase</span>`; return; }
+  el.innerHTML = `<div style="color:#10b981;font-size:9px;margin-bottom:6px;">${filtradas.length} posicoes no Firebase DG25</div>` + filtradas.sort((a,b)=>a.div-b.div).map(p=>`<span style="display:inline-block;background:#0e0e10;border:1px solid #10b981;border-radius:6px;padding:3px 7px;margin:2px;font-size:10px;color:#10b981;">D${String(p.div).padStart(2,'0')} ${p.posId} ${p.itens?.length||0} itens</span>`).join('');
+}
+
+async function preview(){
+  const ruaNum = parseInt(document.getElementById('mp-rua').value,10);
+  const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
+  const divsInput = document.getElementById('mp-divs').value;
+  if(!ruaNum || isNaN(nivelNum)){ alert('Preencha rua e nivel'); return; }
+  const divs = parseDivs(divsInput);
+  if(!divs.length){ alert('Divisoes invalidas'); return; }
+  const area = document.getElementById('mp-preview-area');
+  area.style.display='block';
+  area.innerHTML = `<div style="background:rgba(16,185,129,0.1);border:1px solid #10b981;border-radius:10px;padding:10px;"><div style="color:#10b981;font-weight:bold;font-size:11px;margin-bottom:8px;">Previa - Sera gravado DIRETO no Firebase DG25 (${divs.length} posicoes):</div><div style="display:flex;flex-wrap:wrap;gap:4px;">${divs.map(d=>`<span style="background:#10b981;color:black;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:bold;">${(ruaNum-1)}-${nivelNum}-${d}</span>`).join('')}</div></div>`;
+  await listarExistentes();
+}
+
+async function adicionar(){
+  const ruaNum = parseInt(document.getElementById('mp-rua').value,10);
+  const nivelNum = parseInt(document.getElementById('mp-nivel').value,10);
+  const divsInput = document.getElementById('mp-divs').value;
+  if(!ruaNum || isNaN(nivelNum)){ alert('Preencha rua e nivel'); return; }
+  const divs = parseDivs(divsInput);
+  if(!divs.length){ alert('Divisoes invalidas'); return; }
+
+  const btn = document.getElementById('mp-add');
+  btn.disabled = true;
+  btn.textContent = '⏳ Gravando no Firebase...';
+
+  try{
+    await ensureRua(ruaNum);
+    let pos = await getPosFirebase();
+    log(`Total atual no banco: ${pos.length}`);
     let adicionadas = 0, existentes = 0;
     const ruaIndex = ruaNum - 1;
     for(const divNum of divs){
       const exists = pos.some(p=>p.ruaIndex===ruaIndex && p.nivel===nivelNum && p.div===divNum);
       if(exists){ existentes++; continue; }
-      const posId = `R${String(ruaNum).padStart(2,'0')}-N${String(nivelNum).padStart(2,'0')}-D${String(divNum).padStart(2,'0')}`;
-      const nova = { ruaIndex: ruaIndex, nivel: nivelNum, div: divNum, posId: posId, id: posId + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,6), itens: [], criadoEm: new Date().toISOString(), manual: true };
+      const posId = `${ruaIndex}-${nivelNum}-${divNum}`;
+      const nova = { posId: posId, ruaIndex: ruaIndex, nivel: nivelNum, div: divNum, itens: [], criadoEm: new Date().toISOString(), manual: true, origem: 'DG25' };
       pos.push(nova);
       adicionadas++;
+      log(`Nova: ${posId}`);
     }
     if(adicionadas>0){
-      setP(pos);
+      await setPosFirebase(pos);
       const msg = document.getElementById('mp-msg');
       msg.style.display='block'; msg.style.background='rgba(16,185,129,0.15)'; msg.style.border='1px solid #10b981'; msg.style.color='#10b981';
-      msg.innerHTML = `✅ <b>${adicionadas}</b> posicoes adicionadas!<br><span style="color:#a1a1aa;font-size:10px;">${existentes? `${existentes} ja existiam e foram ignoradas.` : ''} Sincronizando...</span>`;
-      setTimeout(()=>{ msg.style.display='none'; },4000);
-      listarExistentes();
-      setTimeout(()=>{ try{ window.location.reload(); }catch{} },1200);
+      msg.innerHTML = `✅ <b>${adicionadas}</b> posicoes gravadas DIRETO no Firebase DG25!<br>Banco: dg25-e1833 - Path: ${PATH_POS}<br>Total agora: ${pos.length} | ${existentes} ja existiam<br><span style="font-size:10px;color:#a1a1aa;">Atualizacao simultanea em todos dispositivos que usam DG25</span>`;
+      await listarExistentes();
+      // Forca atualizar app principal tambem
+      try{
+        // atualiza local temporario so para render imediato, mas principal e Firebase
+        localStorage.setItem('wms_final_posicoes', JSON.stringify(pos));
+        window.dispatchEvent(new CustomEvent('wms_posicoes_updated',{detail:pos}));
+      }catch{}
+      setTimeout(()=>window.location.reload(), 1500);
     } else {
       const msg = document.getElementById('mp-msg');
       msg.style.display='block'; msg.style.background='rgba(251,191,36,0.15)'; msg.style.border='1px solid #fbbf24'; msg.style.color='#fbbf24';
-      msg.innerHTML = `Todas as ${existentes} posicoes ja existem.`;
+      msg.innerHTML = `⚠️ Todas as ${existentes} ja existem no Firebase`;
     }
+  }catch(e){
+    log('ERRO FINAL: '+e.message);
+    alert('Erro ao gravar no Firebase: '+e.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '🔥 GRAVAR DIRETO NO FIREBASE DG25';
   }
-  function openModal(){ document.getElementById('manual-pos-root').style.display='block'; document.body.style.overflow='hidden'; listarExistentes(); preview(); }
-  function closeModal(){ document.getElementById('manual-pos-root').style.display='none'; document.body.style.overflow=''; }
-  function injectButton(){
-    try{
-      let bar=null;
-      for(const d of document.querySelectorAll('div')){ if(d.className&&typeof d.className==='string'&&d.className.includes('max-w-[1440px]')&&d.className.includes('pt-6')){ bar=d; break; } }
-      if(bar && !bar.querySelector('#btn-manual-pos')){
-        const btn=document.createElement('button'); btn.id='btn-manual-pos'; btn.textContent='+ Posicoes'; btn.title='Adicionar posicoes manualmente (D11-D12 N07 R12)'; btn.style.cssText='height:36px;padding:0 16px;border-radius:9999px;font-size:12px;border:2px solid #a78bfa;background:#151518;color:#a78bfa;font-weight:bold;margin-right:8px;'; btn.onclick=openModal; bar.prepend(btn);
-      }
-      if(!document.getElementById('btn-manual-pos-float')){
-        const f=document.createElement('button'); f.id='btn-manual-pos-float'; f.textContent='+ Adicionar Posicoes'; f.style.cssText='position:fixed;bottom:20px;right:20px;z-index:999998;height:48px;padding:0 20px;border-radius:9999px;background:#a78bfa;color:black;font-weight:bold;font-size:13px;border:none;box-shadow:0 8px 24px rgba(167,139,250,0.4);cursor:pointer;'; f.onclick=openModal; document.body.appendChild(f);
-      }
-    }catch(e){}
-  }
-  document.getElementById('mp-close').onclick=closeModal;
-  document.getElementById('mp-preview').onclick=preview;
-  document.getElementById('mp-add').onclick=adicionar;
-  document.getElementById('mp-exemplo').onclick=()=>{ document.getElementById('mp-rua').value=12; document.getElementById('mp-nivel').value=7; document.getElementById('mp-divs').value='11,12'; preview(); };
-  document.getElementById('mp-rua').addEventListener('change', listarExistentes);
-  document.getElementById('mp-nivel').addEventListener('change', listarExistentes);
-  document.getElementById('manual-pos-root').addEventListener('click', (e)=>{ if(e.target.id==='manual-pos-root') closeModal(); });
-  setTimeout(()=>{ injectButton(); listarExistentes(); },1200);
-  setInterval(injectButton, 3000);
-})();
+}
+
+function openModal(){ document.getElementById('manual-pos-root').style.display='block'; document.body.style.overflow='hidden'; listarExistentes(); preview(); }
+function closeModal(){ document.getElementById('manual-pos-root').style.display='none'; document.body.style.overflow=''; }
+
+// Escuta tempo real - atualizacao simultanea
+try{
+  onValue(ref(db, PATH_POS), (snap)=>{
+    if(snap.exists()){
+      const data = snap.val();
+      const arr = Array.isArray(data) ? data : Object.values(data);
+      log(`🔄 Atualizacao simultanea recebida: ${arr.length} posicoes do Firebase`);
+      // Atualiza visual se modal aberto
+      const modalOpen = document.getElementById('manual-pos-root')?.style.display !== 'none';
+      if(modalOpen) listarExistentes();
+    }
+  });
+  log('Listener tempo real ativo - atualizacoes simultaneas ON');
+}catch(e){ log('Listener erro: '+e.message); }
+
+function injectButton(){
+  try{
+    let bar=null;
+    for(const d of document.querySelectorAll('div')){ if(d.className&&typeof d.className==='string'&&d.className.includes('max-w-[1440px]')&&d.className.includes('pt-6')){ bar=d; break; } }
+    if(bar && !bar.querySelector('#btn-manual-pos')){
+      const btn=document.createElement('button'); btn.id='btn-manual-pos'; btn.textContent='🔥 DG25 + Posicoes'; btn.style.cssText='height:36px;padding:0 16px;border-radius:9999px;font-size:12px;border:2px solid #10b981;background:#10b981;color:black;font-weight:bold;margin-right:8px;'; btn.onclick=openModal; bar.prepend(btn);
+    }
+    if(!document.getElementById('btn-manual-pos-float')){
+      const f=document.createElement('button'); f.id='btn-manual-pos-float'; f.textContent='🔥 Adicionar no Firebase DG25'; f.style.cssText='position:fixed;bottom:20px;right:20px;z-index:999998;height:48px;padding:0 20px;border-radius:9999px;background:#10b981;color:black;font-weight:bold;font-size:13px;border:none;box-shadow:0 8px 24px rgba(16,185,129,0.6);cursor:pointer;'; f.onclick=openModal; document.body.appendChild(f);
+    }
+  }catch(e){}
+}
+
+document.getElementById('mp-close').onclick=closeModal;
+document.getElementById('mp-preview').onclick=preview;
+document.getElementById('mp-add').onclick=adicionar;
+document.getElementById('mp-refresh').onclick=listarExistentes;
+document.getElementById('mp-exemplo').onclick=()=>{ document.getElementById('mp-rua').value=12; document.getElementById('mp-nivel').value=7; document.getElementById('mp-divs').value='11,12'; preview(); };
+document.getElementById('mp-migrar').onclick=async()=>{
+  if(!confirm('Migrar dados do banco antigo (controle-de-estoque-98bf1) para o novo DG25? Isso vai copiar todas posicoes e ruas para dg25-e1833')) return;
+  try{
+    log('Iniciando migracao do banco antigo...');
+    const [posRes, ruasRes] = await Promise.all([
+      fetch(OLD_FB+'/posicoes.json').then(r=>r.json()),
+      fetch(OLD_FB+'/ruas.json').then(r=>r.json())
+    ]);
+    const posArr = Array.isArray(posRes) ? posRes : (posRes ? Object.values(posRes) : []);
+    const ruasArr = Array.isArray(ruasRes) ? ruasRes : (ruasRes ? Object.values(ruasRes) : []);
+    log(`Antigo: ${posArr.length} posicoes, ${ruasArr.length} ruas`);
+    if(posArr.length) await setPosFirebase(posArr);
+    if(ruasArr.length) await setRuasFirebase(ruasArr);
+    log('✅ Migracao concluida!');
+    alert(`Migrado ${posArr.length} posicoes e ${ruasArr.length} ruas para DG25`);
+    await listarExistentes();
+  }catch(e){ log('Erro migracao: '+e.message); alert('Erro migracao: '+e.message); }
+};
+document.getElementById('mp-rua').addEventListener('input', listarExistentes);
+document.getElementById('mp-nivel').addEventListener('input', listarExistentes);
+document.getElementById('manual-pos-root').addEventListener('click', (e)=>{ if(e.target.id==='manual-pos-root') closeModal(); });
+setTimeout(()=>{ injectButton(); },1200);
+setInterval(injectButton, 3000);
+log('Firebase DG25 inicializado - SEM localStorage');
 </script>
 
 </body>
