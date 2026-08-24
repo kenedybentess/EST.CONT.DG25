@@ -5,41 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema WMS</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { overflow:hidden; background:#0f172a; }
-  iframe { width:100vw; height:100vh; border:0; display:block; }
-  .btn-wms {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #0ea5e9;
-    color: white;
-    padding: 14px 22px;
-    border-radius: 50px;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    text-decoration: none;
-    box-shadow: 0 8px 24px rgba(14,165,233,0.4), 0 2px 8px rgba(0,0,0,0.2);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all .2s ease;
-    cursor: pointer;
-    border: none;
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  .top-bar{background:#0f172a;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+  .top-bar b{color:#38bdf8}
+  .frame-wrap{flex:1;position:relative;background:#fff}
+  iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+  .fallback{display:none;position:absolute;inset:0;place-items:center;background:#f8fafc;color:#475569;text-align:center;padding:40px}
+  .fallback.show{display:grid}
+  .btn-wms{
+    position:fixed;bottom:24px;right:24px;background:#0ea5e9;color:#fff;
+    padding:14px 22px;border-radius:50px;font-weight:700;font-size:14px;
+    text-decoration:none;box-shadow:0 8px 24px rgba(14,165,233,.4),0 2px 8px rgba(0,0,0,.2);
+    z-index:9999;display:flex;align-items:center;gap:8px;transition:all .2s ease;
   }
-  .btn-wms:hover { transform: scale(1.05) translateY(-2px); background: #0284c7; box-shadow: 0 12px 32px rgba(14,165,233,0.5); }
-  .btn-wms:active { transform: scale(0.98); }
+  .btn-wms:hover{transform:scale(1.05) translateY(-2px);background:#0284c7}
 </style>
 </head>
 <body>
-  <!-- Seu index_2.html original carregado intacto -->
-  <iframe src="index_2.html" title="Sistema Principal"></iframe>
-  
-  <!-- Botão flutuante para o Importador -->
-  <a href="Importador-Planilha-Wms.html" target="_blank" class="btn-wms" title="Abrir Importador de Planilha WMS">
+  <div class="top-bar">
+    <span>✅ <b>index_2.html</b> original preservado | Wrapper com botão</span>
+    <span style="opacity:.7">Se ficar cinza, coloque os 3 arquivos na mesma pasta</span>
+  </div>
+
+  <div class="frame-wrap">
+    <iframe id="mainFrame" src="index_2.html"></iframe>
+    <div id="fallback" class="fallback">
+      <div>
+        <div style="font-size:48px;margin-bottom:16px">📁</div>
+        <h3 style="color:#0f172a;margin-bottom:8px">Não achei o index_2.html</h3>
+        <p>Coloque estes 3 arquivos na MESMA pasta:</p>
+        <code style="display:block;background:#0f172a;color:#38bdf8;padding:12px 20px;border-radius:8px;margin:16px auto;max-width:400px;text-align:left">
+        /sua-pasta/<br>
+        ├─ index.html (este arquivo)<br>
+        ├─ index_2.html (seu original)<br>
+        └─ Importador-Planilha-Wms.html
+        </code>
+      </div>
+    </div>
+  </div>
+
+  <a href="Importador-Planilha-Wms.html" target="_blank" class="btn-wms">
     <span>📦</span> Importador Planilha WMS
   </a>
+
+<script>
+  const iframe = document.getElementById('mainFrame');
+  const fallback = document.getElementById('fallback');
+  let loaded = false;
+  iframe.onload = () => { loaded = true; };
+  setTimeout(() => { 
+    if(!loaded || (iframe.contentDocument && iframe.contentDocument.body.innerHTML.trim() === '')) {
+      fallback.classList.add('show');
+    }
+  }, 2500);
+  if(location.href.includes('container://') || location.href.includes('agentic_artifact')){
+    document.getElementById('fallback').innerHTML = '<div><h3>👀 Preview do gerador</h3><p>Baixe o arquivo index.html e coloque na mesma pasta do seu index_2.html real.<br>No preview não consigo ver seu index_2.html original.</p></div>';
+    fallback.classList.add('show');
+  }
+</script>
 </body>
 </html>
